@@ -4,54 +4,62 @@ document.addEventListener('touchstart', function(e) {e.preventDefault();}, false
 
 
 var canvas = document.getElementById('game');
-    var context = canvas.getContext('2d');
+var context = canvas.getContext('2d');
 
-    var rs = {x: 1, y: 1, fx:100, fy: 100, marw: 1, marh: 1};
+var rs = {x: 1, y: 1, fx:100, fy: 100, marw: 1, marh: 1};
 
-    var tox, toy = 0;
-    var topres = false;
-    
-    var GameStatusChanger = {};
- 
-    
+var tox, toy = 0;
+var topres = false;
 
-    var ActionOb = function () {
-        function ActionOb (bx, by, ex, ey, acc, canc, movin) { 
-            this.bx = bx;
-            this.by = by;
-            this.ex = ex;
-            this.ey = ey;
-            this.acc = acc;
-            this.canc = canc;
-            this.movin = movin;
-        }; 
-        ActionOb.prototype.isit = function (x, y){
-            if ((x>this.bx) && (x<this.ex) && (y>this.by) & (y<this.ey)) {return true;} else {return false;};
-        };
-        return ActionOb;
-    }();
+var GameStatusChanger = {};
 
-var getmxy =  function (e) {
-                    tox = e.pageX - canvas.offsetLeft;
-                    toy = e.pageY - canvas.offsetTop;
-                    
-                };
-var gettxy =  function (e) {
-                e.preventDefault();
-                tox = e.targetTouches[0].pageX - canvas.offsetLeft;
-                toy = e.targetTouches[0].pageY - canvas.offsetTop;
-             
-            };
+
+
+var ActionOb = function () {
+
+    function ActionOb (bx, by, ex, ey, acc, canc, movin) { 
+        this.bx = bx;
+        this.by = by;
+        this.ex = ex;
+        this.ey = ey;
+        this.acc = acc;
+        this.canc = canc;
+        this.movin = movin;
+    }
+
+    ActionOb.prototype.isit = function (x, y){
+        if ((x>this.bx) && (x<this.ex) && (y>this.by) & (y<this.ey)) {return true;} else {return false;}
+    };
+
+    return ActionOb;
+
+}();
+
+
+var inpu = (function () {
+
+    function getmxy(e)  {
+        tox = e.pageX - canvas.offsetLeft;
+        toy = e.pageY - canvas.offsetTop;
+        
+    }
+
+    function gettxy(e)  {
+        e.preventDefault();
+        tox = e.targetTouches[0].pageX - canvas.offsetLeft;
+        toy = e.targetTouches[0].pageY - canvas.offsetTop;
+
+    }
 
     var ActionMap = function () {
         function ActionMap (arr) {
             this.arr = [];
             this.touche = [];
-        };
+        }
         ActionMap.prototype.isthere = function (x, y) {
             var thereis = [];
             var arr = this.arr;
-            for (var v = 0; v <arr.length; v++) {if (arr[v].isit(x, y)) {thereis.push(arr[v]);};};
+            for (var v = 0; v <arr.length; v++) {if (arr[v].isit(x, y)) {thereis.push(arr[v]);}}
             return thereis;
         };
         ActionMap.prototype.moved = function () {
@@ -64,26 +72,26 @@ var gettxy =  function (e) {
             for (var v = 0; v <arr.length; v++) {
                      is = false;
                      for (var vv = 0; vv <arr.length; vv++) {
-                         if (arr[0] == oo[vv]) {is=true;};
-                         };
-                     if (!is) {arr.shift().canc();} else {arr.push(arr.shift());};
-                };
+                         if (arr[0] == oo[vv]) {is=true;}
+                         }
+                     if (!is) {arr.shift().canc();} else {arr.push(arr.shift());}
+                }
             while (oo.length>0) {
                 is = false;
-                for (var v = 0; v <arr.length; v++) {
-                        if (arr[v] == oo[0]) {is=true;};
-                    };
+                for (v = 0; v <arr.length; v++) {
+                        if (arr[v] == oo[0]) {is=true;}
+                    }
                 if (is) {oo.shift();} else {oo[0].movin();
-                                            arr.push(oo.shift());};                   
-                };
-            };
+                                            arr.push(oo.shift());}                  
+                }
+            }
         };
         ActionMap.prototype.mmove = function (e) {
             
             if (topres) {
                 getmxy(e);
                 this.moved();
-                };
+            }
         };
         ActionMap.prototype.tstart = function (e) {
             gettxy(e);
@@ -100,20 +108,22 @@ var gettxy =  function (e) {
             this.moved();
         };
         ActionMap.prototype.cancel = function () {
-             while(this.touche.length>0) {this.touche.canc();};
+             while(this.touche.length>0) {this.touche.canc();}
         };
         ActionMap.prototype.fire = function () {
-             while(this.touche.length>0) {this.touche.pop().acc();};
+             while(this.touche.length>0) {this.touche.pop().acc();}
         };
         ActionMap.prototype.touchup = function () {
             topres = false;
             this.fire();
         }; 
-    
+
         return ActionMap;
     }();
 
-    var inpu = new ActionMap();
+    return new ActionMap();
+
+})();
 
 
     canvas.addEventListener("mousedown", function (e) {inpu.mstart(e);}, false);
@@ -138,37 +148,37 @@ var gettxy =  function (e) {
 
 
 
-    var resizegame = function () {
-        
-        var bw = window.innerWidth - 20;
-        var bh = window.innerHeight - 20;
-        if (bw*1.5>bh) {canvas.height = bh; 
-                        canvas.width = Math.floor(bh * 0.6);} 
-                else   {canvas.width  = bw; 
-                        canvas.height = Math.floor(bw * 1.66)};
+var resizegame = function () {
+    
+    var bw = window.innerWidth - 20;
+    var bh = window.innerHeight - 20;
+    if (bw*1.5>bh) {canvas.height = bh; 
+                    canvas.width = Math.floor(bh * 0.6);} 
+            else   {canvas.width  = bw; 
+                    canvas.height = Math.floor(bw * 1.66);}
 
-        canvas.style.marginLeft = Math.floor((bw - canvas.width)/2) + 'px';
-        canvas.style.marginTop  = Math.floor((bh - canvas.height)/2) + 'px';
-        
-        context.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.style.marginLeft = Math.floor((bw - canvas.width)/2) + 'px';
+    canvas.style.marginTop  = Math.floor((bh - canvas.height)/2) + 'px';
+    
+    context.clearRect(0, 0, canvas.width, canvas.height);
 
 
-        rs.x = canvas.width / 100;
-        rs.y = canvas.height / 100;
+    rs.x = canvas.width / 100;
+    rs.y = canvas.height / 100;
 
-        rs.marw = rs.x*2;
-        rs.marh = rs.y*2;
-        
-        rs.fx = canvas.width - rs.marw * 2;
-        rs.fy = canvas.height - rs.marh * 2;
-        
-        };
+    rs.marw = rs.x*2;
+    rs.marh = rs.y*2;
+    
+    rs.fx = canvas.width - rs.marw * 2;
+    rs.fy = canvas.height - rs.marh * 2;
+    
+};
 
 
 //mostimportant asset!
 
 var randomize = function(a,b,c,d){//array,placeholder,placeholder,placeholder
- c=a.length;while(c)b=Math.random()*c--|0,d=a[c],a[c]=a[b],a[b]=d
+    c=a.length;while(c)b=Math.random()*c--|0,d=a[c],a[c]=a[b],a[b]=d
 };
 
 
@@ -202,7 +212,7 @@ canvas.style.backgroundColor = colors.empty;
                   //  context.fillStyle = colors.red;
 
                   context.fill();
-            };
+            }
         if (value>1) {
                   context.beginPath();
                   context.moveTo(x+margin+2, y+(len/2));
@@ -213,7 +223,7 @@ canvas.style.backgroundColor = colors.empty;
                   context.fillStyle = colors.empty;
                   //  context.fillStyle = colors.red;
                   context.fill();
-            };    
+            }
     };
     
     var CutOut = function () {
@@ -592,14 +602,14 @@ canvas.style.backgroundColor = colors.empty;
                              for (var w = 0; w <= this.wi; w++) {
                                  if (this.values[w+h*(1+this.wi)][0]>0) {
                                      this.squares.push(new Square(frx+w*psize, fry+h*psize, psize, pmargin, this.values[w+h*(1+this.wi)][0], this.values[w+h*(1+this.wi)][1], 2));
-                                    };
-                             };
-                        };
+                                    }
+                             }
+                        }
                     for (var s = 0; s < this.squares.length; s++) {
                         this.squares[s].data.innermargin = rs.x/2;
                         this.squares[s].data.stroke = rs.x/2;
                         this.squares[s].data.blister  = 1;
-                        };
+                        }
                 };
             
             Piece.prototype.draw = function () {
