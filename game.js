@@ -14,7 +14,6 @@ var topres = false;
 var GameStatusChanger = {};
 
 
-
 var ActionOb = function () {
 
     function ActionOb (bx, by, ex, ey, acc, canc, movin) { 
@@ -52,10 +51,12 @@ var inpu = (function () {
     }
 
     var ActionMap = function () {
+
         function ActionMap (arr) {
             this.arr = [];
             this.touche = [];
         }
+
         ActionMap.prototype.isthere = function (x, y) {
             var thereis = [];
             var arr = this.arr;
@@ -126,32 +127,28 @@ var inpu = (function () {
 })();
 
 
-    canvas.addEventListener("mousedown", function (e) {inpu.mstart(e);}, false);
+canvas.addEventListener("mousedown", function (e) {inpu.mstart(e);}, false);
 
-    canvas.addEventListener("mousemove", function (e) {inpu.mmove(e);}, false);
+canvas.addEventListener("mousemove", function (e) {inpu.mmove(e);}, false);
 
-    document.body.addEventListener("mouseup", function (e) {inpu.touchup();}, false);
+document.body.addEventListener("mouseup", function (e) {inpu.touchup();}, false);
 
-    document.body.addEventListener("mousedown", function (e) {inpu.mstart(e);}, false);
+document.body.addEventListener("mousedown", function (e) {inpu.mstart(e);}, false);
 
-    canvas.addEventListener("touchstart", function (e) {inpu.tstart(e);}, false);
+canvas.addEventListener("touchstart", function (e) {inpu.tstart(e);}, false);
 
-    canvas.addEventListener("touchmove", function (e) {inpu.tmove(e);}, true);
+canvas.addEventListener("touchmove", function (e) {inpu.tmove(e);}, true);
 
-    canvas.addEventListener("touchend", function (e) {inpu.touchup(e);}, false);
+canvas.addEventListener("touchend", function (e) {inpu.touchup(e);}, false);
 
-    document.body.addEventListener("touchcancel", function (e) {inpu.cancel(e);}, false);
+document.body.addEventListener("touchcancel", function (e) {inpu.cancel(e);}, false);
+
     
-    
-
-
-
-
-
 var resizegame = function () {
     
     var bw = window.innerWidth - 20;
     var bh = window.innerHeight - 20;
+
     if (bw*1.5>bh) {canvas.height = bh; 
                     canvas.width = Math.floor(bh * 0.6);} 
             else   {canvas.width  = bw; 
@@ -175,12 +172,25 @@ var resizegame = function () {
 };
 
 
-//mostimportant asset!
+//important asset! Fisher-Yates shuffle to mutate an array;
 
-var randomize = function(a,b,c,d){//array,placeholder,placeholder,placeholder
-    c=a.length;while(c)b=Math.random()*c--|0,d=a[c],a[c]=a[b],a[b]=d
+var randomize = function(a,b,c,d) {
+
+    c = a.length;
+
+    while( c ) {
+
+        b = Math.random()*c | 0;
+        c = c - 1;
+        d = a[c];
+        a[c] = a[b];
+        a[b] = d;
+
+    }
+
+    return a;
+
 };
-
 
 //defining gameplay colors
 
