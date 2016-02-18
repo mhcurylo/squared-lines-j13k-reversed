@@ -200,364 +200,441 @@ var colors = {empty: '#0b0b0b',
               red: '#E61717',
               bck: '#f4f4f4' }; 
 
-colors.rn = function () {var hold = colors.binary.shift();
-                             randomize(colors.binary);
-                             colors.binary.unshift(hold);};
+colors.rn = function () {
+    var hold = colors.binary.shift();
+    randomize(colors.binary);
+    colors.binary.unshift(hold);
+};
 
 colors.rn();
 
 canvas.style.backgroundColor = colors.empty;
 
 //defining basic graphical element and animation - squares and circles
-    var drawblister = function (x, y, len, margin, stroke, value) {
-        var ms = stroke/2;
-        if (value>0) {
-                  context.beginPath();
-                  context.moveTo(x+(len/2), y+margin+2);
-                  context.lineTo(x+(len/2)-ms, y+margin-ms);
-                  context.lineTo(x+(len/2), y-margin-2);
-                  context.lineTo(x+(len/2)+ms, y-margin+ms);
-                  context.lineTo(x+(len/2), y+margin+2);
-                  context.fillStyle = colors.empty;
-                  //  context.fillStyle = colors.red;
+var drawblister = function drawblister (x, y, len, margin, stroke, value) {
 
-                  context.fill();
-            }
-        if (value>1) {
-                  context.beginPath();
-                  context.moveTo(x+margin+2, y+(len/2));
-                  context.lineTo(x+margin-ms, y+(len/2)+ms);
-                  context.lineTo(x-margin-2, y+(len/2));
-                  context.lineTo(x-margin+ms, y+(len/2)-ms);
-                  context.lineTo(x+margin+2, y+(len/2));
-                  context.fillStyle = colors.empty;
-                  //  context.fillStyle = colors.red;
-                  context.fill();
-            }
-    };
+    var ms = stroke/2;
+
+    if (value>0) {
+          context.beginPath();
+          context.moveTo(x+(len/2), y+margin+2);
+          context.lineTo(x+(len/2)-ms, y+margin-ms);
+          context.lineTo(x+(len/2), y-margin-2);
+          context.lineTo(x+(len/2)+ms, y-margin+ms);
+          context.lineTo(x+(len/2), y+margin+2);
+          context.fillStyle = colors.empty;
+          context.fill();
+    }
+
+    if (value>1) {
+          context.beginPath();
+          context.moveTo(x+margin+2, y+(len/2));
+          context.lineTo(x+margin-ms, y+(len/2)+ms);
+          context.lineTo(x-margin-2, y+(len/2));
+          context.lineTo(x-margin+ms, y+(len/2)-ms);
+          context.lineTo(x+margin+2, y+(len/2));
+          context.fillStyle = colors.empty;
+          context.fill();
+    }
+};
     
-    var CutOut = function () {
-                 function CutOut(x, y, size, margin, value, color, blister){
-                    this.x = x;
-                    this.y = y,
-                    this.size = size;
-                    this.margin = margin;
-                    this.value = value;
-                    this.color = colors.binary[color];
-                    this.blister = blister;
-                    this.selected = false;
-                    this.open = true;
-                    this.broken = false;
-                    this.innermargin = rs.x;
-                    this.stroke = rs.x;
-                    };
-                 CutOut.prototype.switch = function () {this.open != this.open;
-                    };
-                return CutOut;
-                }();
+var CutOut = function () {
+    function CutOut(x, y, size, margin, value, color, blister){
+        this.x = x;
+        this.y = y;
+        this.size = size;
+        this.margin = margin;
+        this.value = value;
+        this.color = colors.binary[color];
+        this.blister = blister;
+        this.selected = false;
+        this.open = true;
+        this.broken = false;
+        this.innermargin = rs.x;
+        this.stroke = rs.x;
+    }
 
-    var Square = function () {
-                 function Square(x, y, size, margin, value, color, blister){
-                    this.data = new CutOut(x, y, size, margin, value, color, blister);
-                    
-                    };
-                 Square.prototype.clear = function () {
-                        console.log('y');
-                        var x = this.data.x-rs.x/2;
-                        var y = this.data.y-rs.x/2;
-                        var size = this.data.size+rs.x;
-                        context.fillStyle = colors.empty;
-                        context.fillRect(x, y, size, size);
-                    };
-                 Square.prototype.draw = function () {
-                         //this.clear();
-                         var x = this.data.x+this.data.margin;
-                         var y = this.data.y+this.data.margin;
-                         var size = this.data.size-2*this.data.margin;
-                         if (this.data.open) {  
-                                 if (this.data.selected){context.fillStyle = colors.red;} 
-                                                        else {context.fillStyle = colors.bck;};
-                                 context.fillRect(x, y, size, size);
-                                 if (!this.data.broken) {
-                                     if (this.data.blister>0){
-                                         drawblister(x, y, size, this.data.innermargin, this.data.stroke, this.data.blister);
-                                     };
-                                     if (this.data.value>0){
-                                         x = x+this.data.innermargin;
-                                         y = y+this.data.innermargin;
-                                         size = size - 2*this.data.innermargin
-                                         context.fillStyle = this.data.color[this.data.value-1];
-                                         context.fillRect(x, y, size, size);
-                                     };    
-                                 } else {
-                                      drawblister(x, y, size, this.data.innermargin*Math.random(), this.data.stroke*(0.6+0.8*Math.random()), this.data.blister);
-                                 };
-                         };   
-                    };
-                Square.prototype.selecto = function () {
-                        this.data.selected = true;
-                        this.draw();
-                    };
-                 Square.prototype.deselect = function () {
-                        this.data.selected = false;
-                        this.draw();
-                    };
-                 Square.prototype.break = function () {
-                        var br = this;
-                        this.data.value = 0;
-                        this.data.selected = false;
-                        if (!this.drawplus) {this.draw();} else {this.drawplus();};
-                        setTimeout(function () {br.broke();}, 250);
-                    };
-                 Square.prototype.broke = function () {
-                        this.data.broken = true;
-                        this.draw();
-                 };
-                 Square.prototype.decolor = function () {
-                        this.data.color = colors.binary[0];
-                        this.draw();
-                    };
-                return Square;
-                }();
+    CutOut.prototype.switch = function () {
+        this.open = !this.open;
+    };
 
-    var Circle = function () {
-                 function Circle(x, y, size, margin, value, color, blister){
-                    this.data = new CutOut(x, y, size, margin, value, color, blister);
-                  
-                    };
-                 Circle.prototype.drawcircle = function (x, y, margin, size, fill) {
-                        context.beginPath();
-                        context.arc(x+size, y+size, size-margin, 0, 2*Math.PI);
-                        context.fillStyle = fill;
-                        context.fill();
-                    };
-                 Circle.prototype.clear = function () {
-                        var x = this.data.x+this.data.margin;
-                        var y = this.data.y;
-                        var size = this.data.size/2;
-                        context.clearRect(x, y, size, size);
-                    };
-                 Circle.prototype.draw = function () {
-                         //this.clear();
-                         var x = this.data.x;
-                         var y = this.data.y;
-                         var size = (this.data.size/2);
-                         var margin = this.data.margin;
-                         var fillit = '';
-                         if (this.data.open) {  
-                                if (this.data.selected){fillit = colors.red;} 
-                                                        else {fillit = colors.bck;};
-                                 this.drawcircle(x, y, margin, size, fillit);
-                                if (!this.data.broken) {
-                                    if (this.data.blister>0){
-                                         drawblister(x+margin, y+margin, (this.data.size-2*margin), this.data.innermargin, this.data.stroke, this.data.blister);
-                                     };
-                                     if (this.data.value>0){
-                                         margin = margin + this.data.innermargin;
-                                         fillit = this.data.color[this.data.value-1];
-                                         this.drawcircle(x, y, margin, size, fillit);
-                                     };   
-                                } else {
-                                     drawblister(x+margin, y+margin, (this.data.size-2*margin), this.data.innermargin*Math.random(), this.data.stroke*(0.6+0.8*Math.random()), this.data.blister);
-                                };
-                         };   
-                    };
-                return Circle;
-                }();
+    return CutOut;
+}();
+
+var Square = function () {
+
+    function Square(x, y, size, margin, value, color, blister) {
+
+    this.data = new CutOut(x, y, size, margin, value, color, blister);
+
+    }
+
+    Square.prototype.clear = function () {
+        console.log('y');
+        var x = this.data.x-rs.x/2;
+        var y = this.data.y-rs.x/2;
+        var size = this.data.size+rs.x;
+        context.fillStyle = colors.empty;
+        context.fillRect(x, y, size, size);
+    };
+
+    Square.prototype.draw = function () {
+        
+        var x = this.data.x+this.data.margin;
+        var y = this.data.y+this.data.margin;
+        var size = this.data.size-2*this.data.margin;
+
+        if (this.data.open) { 
+
+            if (this.data.selected){
+                context.fillStyle = colors.red;
+            } else {
+                context.fillStyle = colors.bck;
+            }
+
+            context.fillRect(x, y, size, size);
+
+            if (!this.data.broken) {
+                
+                if (this.data.blister>0) {
+                    drawblister(x, y, size, this.data.innermargin, this.data.stroke, this.data.blister);
+                }
+
+                if (this.data.value>0) {
+                    x = x+this.data.innermargin;
+                    y = y+this.data.innermargin;
+                    size = size - 2*this.data.innermargin;
+                    context.fillStyle = this.data.color[this.data.value-1];
+                    context.fillRect(x, y, size, size);
+                }
+
+            } else {
+              drawblister(x, y, size, this.data.innermargin*Math.random(), this.data.stroke*(0.6+0.8*Math.random()), this.data.blister);
+            }
+        } 
+    };
+
+    Square.prototype.selecto = function () {
+        this.data.selected = true;
+        this.draw();
+    };
+
+    Square.prototype.deselect = function () {
+        this.data.selected = false;
+        this.draw();
+    };
+
+    Square.prototype.break = function () {
+        var br = this;
+        this.data.value = 0;
+        this.data.selected = false;
+        if (!this.drawplus) {this.draw();} else {this.drawplus();}
+        setTimeout(function () {br.broke();}, 250);
+    };
+
+    Square.prototype.broke = function () {
+        this.data.broken = true;
+        this.draw();
+    };
+
+    Square.prototype.decolor = function () {
+        this.data.color = colors.binary[0];
+        this.draw();
+    };
+
+    return Square;
+}();
+
+var Circle = function () {
+    
+    function Circle(x, y, size, margin, value, color, blister){
+
+        this.data = new CutOut(x, y, size, margin, value, color, blister);
+
+    }
+
+    Circle.prototype.drawcircle = function (x, y, margin, size, fill) {
+        context.beginPath();
+        context.arc(x+size, y+size, size-margin, 0, 2*Math.PI);
+        context.fillStyle = fill;
+        context.fill();
+    };
+
+    Circle.prototype.clear = function () {
+        var x = this.data.x+this.data.margin;
+        var y = this.data.y;
+        var size = this.data.size/2;
+        context.clearRect(x, y, size, size);
+    };
+
+    Circle.prototype.draw = function () {
+
+        var x = this.data.x;
+        var y = this.data.y;
+        var size = (this.data.size/2);
+        var margin = this.data.margin;
+        var fillit = '';
+
+        if (this.data.open) {  
+
+            if (this.data.selected) {fillit = colors.red;} else {fillit = colors.bck;}
+            
+            this.drawcircle(x, y, margin, size, fillit);
+
+            if (!this.data.broken) {
+                if (this.data.blister>0){
+                    drawblister(x+margin, y+margin, (this.data.size-2*margin), this.data.innermargin, this.data.stroke, this.data.blister);
+                 }
+                 if (this.data.value>0){
+                    margin = margin + this.data.innermargin;
+                    fillit = this.data.color[this.data.value-1];
+                    this.drawcircle(x, y, margin, size, fillit);
+                 }
+            } else {
+                drawblister(x+margin, y+margin, (this.data.size-2*margin), this.data.innermargin*Math.random(), this.data.stroke*(0.6+0.8*Math.random()), this.data.blister);
+            }
+
+        }
+    };
+
+    return Circle;
+
+}();
 
 
 //defining value display objects - and menu - so called instruments;
     
-   
-        var Instruments = function () {
-                var Counter = function () {
-                        function Counter(x, y, cirsize, cirmargin, values, rowlen, color) {
-                                this.values = values;
-                                this.x = x;
-                                this.y = y;
-                                this.cirsize = cirsize;
-                                this.cirmargin = cirmargin;
-                                this.values = values;
-                                this.startvalues = [];
-                                for (var v = 0; v < this.values.length; v++) {this.startvalues.push(this.values[v]);};
-                              
-                                this.rowlen = rowlen;
-                                this.meters = [];
-                                this.color = color;
-                                this.ready = function () {
-                                     var begx = this.x;
-                                     var begy = this.y;
-                                     var rowp = 0;
-                                     for (var value = (this.values.length-1); value >= 0; value--) {
-                                         this.meters.unshift(new Circle(begx, begy, this.cirsize, this.cirmargin, this.values[value]+1, color, 1));
-                                         begx = begx + this.cirsize;
-                                         rowp = rowp+1;
-                                         if (rowp == rowlen) {begx = this.x;
-                                                              begy = this.y + this.cirsize;};
-                                     };
-                                    };
-                               this.ready();
-                            };
 
-                        Counter.prototype.draw = function (value) {
-                                this.meters[value].data.value = this.values[value]+1;
-                           // switch for color change on new level
-                           //this.meters[value].data.color = colors.binary[this.color];
-                                this.meters[value].draw();
-                            };
-                        Counter.prototype.drawall = function () {
-                                for (var value = 0; value < this.values.length; value++) {
-                                 this.draw(value);
-                                };
-                            }; 
-                        Counter.prototype.refresh = function (values) {
-                                for (var value = 0; value < this.values.length; value++) {
-                                 if (this.meters[value].data.value != (this.values[value]+1)) {this.draw(value);};
-                                };
-                            };
-                        Counter.prototype.reset = function () {
-                                for (var value = 0; value < this.values.length; value++) {
-                                 this.values[value] = this.startvalues[value];  
-                                 this.meters[value].data.value = this.startvalues[value]; 
-                                 this.meters[value].data.broken = false;
-                                };
-                                this.drawall();
-                            };
-                        Counter.prototype.a1 = function () {
-                                var value = 0;
-                                while (this.values[value] == 1) {
-                                    this.values[value]= 0;
-                                    value = value + 1;
-                                    if (value == this.values.length) {
-                                        this.values.push(0);
-                                        this.meters.push(new Circle(this.x-this.cirsize, (this.y+this.cirsize*(this.values.length-11)), this.cirsize, this.cirmargin, 1, this.color, 1));};
-                                };
-                                this.values[value] = 1;
-                                this.refresh();
-                            };
-                        Counter.prototype.r1 = function () {
-                                var value = 0;
-                                while (this.values[value] == 0) {
-                                    this.values[value]= 1;
-                                    value = value + 1;
-                                    if (value == this.values.length) {return true};
-                                };
-                                this.values[value] = 0;
-                                value = this.values.length-1;
-                                while (this.values[value] == 0) {
-                                        this.meters[value].data.broken = true;
-                                        value = value-1;
-                                    };
-                                this.refresh();
-                            };
-                        return Counter;
-                    }();
-                
-                 function Instruments() {
-                     colors.rn();
-                      var insx = rs.marw;
-                      var circleprop = (rs.fx/19);
-                      this.circleprop = circleprop;
-                     
-                      var insy = rs.marh+circleprop*1.5;
-                     
-                      this.level = 0;
-                     
-                      this.score = 0;
-                     
-                      this.scoreboard = new Counter(insx+circleprop, insy, (circleprop), ((circleprop)*0.1), [0,0,0,0,0,0,0,0,0,0], 5, 1);
-                      
-                      this.timeboard  = new Counter(insx+circleprop*10, insy, (circleprop), ((circleprop)*0.1), [1,1,1,1,1,1], 3, 2);
-                     
-   
-                    
-                      this.restart = new Square(insx+circleprop*16, insy, circleprop*2, 0, 2, 0, 2);
-                                          
-                      this.restart.drawplus = function () {
-                                this.draw();
-                                context.font = "bold "+rs.x*7+"px Lucida Console";
-                                context.fillStyle = colors.bck;
-                                context.textAlign="center";
-                                context.textBaseline="center";
-                                context.fillText("R", insx+circleprop*17, insy+circleprop*1.4);
-                                context.fillStyle = colors.bck;
-                                context.fillRect(insx+circleprop*16.75, insy+circleprop*0.575, rs.x*2, rs.x*2.1);
-                                
-                      };
+var Instruments = function () {
 
-                                
-                 };
-                 Instruments.prototype.redraw = function () {
-                      
-                      var circleprop = this.circleprop ;   
-                     
-                      var insx = rs.marw;
-                      var insy = rs.marh+circleprop*1.5;
-                     
-                      this.scoreboard.drawall();
-                      this.timeboard.drawall();
-
-                     
-                      this.restart.drawplus(); 
-                     
-                     
-                     
-                  //    this.js13k = new Square(rs.marw+circleprop*6.75, rs.marh*0.5, circleprop*2.5, 0, 2, 1, 2);
-                     
-                   //   this.js13k.draw();
-                    
-                                context.font = "bold "+rs.x*2.8+"px Lucida Console";
-                                context.fillStyle = colors.red;
-                                context.fillText("Squared", rs.marw+circleprop*3.75, rs.marh*2);
-                                context.fillText("Lines", rs.marw+circleprop*9.5, rs.marh*2);
-
-                                
-                                context.fillStyle = colors.bck;
-                                context.fillText("js13k", rs.marw+circleprop*7, rs.marh*2);
-                     
-                                context.fillStyle = colors.binary[0][0];
-                                context.textAlign = "right";
-                                context.fillText("Reversed v0.5", rs.fx, rs.marh*2);
+    var Counter = function () {
         
-                     
-                                context.textAlign = "left";
-                                context.font = "bold "+rs.x*3+"px Lucida Console";
-                                context.fillStyle = colors.binary[1][0];
-                                context.fillText("score", insx+circleprop*6.1, insy+circleprop*1.75);
-                                context.fillStyle = colors.binary[2][0];
-                                context.fillText("time", insx+circleprop*13.1, insy+circleprop*1.75);
-                                context.fillText("time", insx+circleprop*13.1, insy+circleprop*1.75);
-                    
-                                
-                                context.font = "bold "+rs.x*2.8+"px Lucida Console";
-                                context.fillStyle = "#0000e0";
-                                context.textAlign = "center";
-                                context.fillText("heartland", rs.fx+rs.marw-circleprop*2.125, rs.fy+rs.marh+rs.x-circleprop*0.4);
-                    };
-                Instruments.prototype.leveldraw = function () {
-                               
-                                context.clearRect(rs.fx/2-rs.fx/4, rs.fy-rs.x*3, rs.fx/2, rs.x*6);
-                                                  
-                                context.font = "bold "+rs.x*2.8+"px Lucida Console";
-                                context.fillStyle = this.scoreboard.meters[0].data.color[0];
-                                context.textAlign = "center";
-                                context.fillText(this.level+' / 127', rs.fx/2, rs.fy+rs.marh+rs.x-this.circleprop*0.4);
+        function Counter(x, y, cirsize, cirmargin, values, rowlen, color) {
 
-                    };
-                Instruments.prototype.timereset = function () {this.timeboard.reset();};
-                Instruments.prototype.scorereset = function () {this.scoreboard.reset();};
-                Instruments.prototype.r1 = function () {
-                            if (this.timeboard.r1()) {return true};
-                            };
-                Instruments.prototype.a1 = function () {this.score = this.score+1;
-                                                        this.scoreboard.a1();};
-                Instruments.prototype.levelup = function () {
-                                                             this.level = this.level+1;
-                                                             this.timereset();
-                                                             this.leveldraw();
-                                                             this.scoreboard.drawall();};
-                return Instruments;
-        }();
+            this.values = values;
+            this.x = x;
+            this.y = y;
+            this.cirsize = cirsize;
+            this.cirmargin = cirmargin;
+            this.values = values;
+            this.startvalues = [];
+
+            for (var v = 0; v < this.values.length; v++) {
+                this.startvalues.push(this.values[v]);
+            }
+          
+            this.rowlen = rowlen;
+            this.meters = [];
+            this.color = color;
+
+            this.ready = function () {
+                var begx = this.x;
+                var begy = this.y;
+                var rowp = 0;
+                for (var value = (this.values.length-1); value >= 0; value--) {
+                    this.meters.unshift(new Circle(begx, begy, this.cirsize, this.cirmargin, this.values[value]+1, color, 1));
+                    begx = begx + this.cirsize;
+                    rowp = rowp+1;
+                    if (rowp == rowlen) {begx = this.x;
+                                          begy = this.y + this.cirsize;}
+                }
+            };
+            
+            this.ready();
+        }
+
+        Counter.prototype.draw = function (value) {
+
+            this.meters[value].data.value = this.values[value]+1;
+            this.meters[value].draw();
+        
+        };
+        
+        Counter.prototype.drawall = function () {
+        
+            for (var value = 0; value < this.values.length; value++) {
+             this.draw(value);
+            }
+        
+        }; 
+        
+        Counter.prototype.refresh = function (values) {
+        
+            for (var value = 0; value < this.values.length; value++) {
+
+                if (this.meters[value].data.value != (this.values[value]+1)) {this.draw(value);}
+
+            }
+        
+        };
+
+        Counter.prototype.reset = function () {
+
+            for (var value = 0; value < this.values.length; value++) {
+             this.values[value] = this.startvalues[value];  
+             this.meters[value].data.value = this.startvalues[value]; 
+             this.meters[value].data.broken = false;
+            }
+
+            this.drawall();
+        };
+        
+        Counter.prototype.a1 = function () {
+
+            var value = 0;
+
+            while (this.values[value] == 1) {
+                this.values[value]= 0;
+                value = value + 1;
+                if (value == this.values.length) {
+                    this.values.push(0);
+                    this.meters.push(new Circle(this.x-this.cirsize, 
+                        (this.y+this.cirsize*(this.values.length-11)), 
+                        this.cirsize, this.cirmargin, 1, this.color, 1));
+                }
+            }
+
+            this.values[value] = 1;
+            this.refresh();
+
+        };
+        
+        Counter.prototype.r1 = function () {
+
+            var value = 0;
+
+            while (this.values[value] === 0) {
+                this.values[value]= 1;
+                value = value + 1;
+                if (value == this.values.length) {return true;}
+            }
+
+            this.values[value] = 0;
+            value = this.values.length-1;
+
+            while (this.values[value] === 0) {
+                    this.meters[value].data.broken = true;
+                    value = value-1;
+            }
+
+            this.refresh();
+
+        };
+
+        return Counter;
+    }();
+    
+    function Instruments() {
+            
+        colors.rn();
+        var insx = rs.marw;
+        var circleprop = (rs.fx/19);
+        this.circleprop = circleprop;
+
+        var insy = rs.marh+circleprop*1.5;
+
+        this.level = 0;
+
+        this.score = 0;
+
+        this.scoreboard = new Counter(insx+circleprop, insy, (circleprop), ((circleprop)*0.1), [0,0,0,0,0,0,0,0,0,0], 5, 1);
+
+        this.timeboard  = new Counter(insx+circleprop*10, insy, (circleprop), ((circleprop)*0.1), [1,1,1,1,1,1], 3, 2);
+
+
+
+        this.restart = new Square(insx+circleprop*16, insy, circleprop*2, 0, 2, 0, 2);
+                          
+        this.restart.drawplus = function () {
+            this.draw();
+            context.font = "bold "+rs.x*7+"px Lucida Console";
+            context.fillStyle = colors.bck;
+            context.textAlign="center";
+            context.textBaseline="center";
+            context.fillText("R", insx+circleprop*17, insy+circleprop*1.4);
+            context.fillStyle = colors.bck;
+            context.fillRect(insx+circleprop*16.75, insy+circleprop*0.575, rs.x*2, rs.x*2.1);
+                
+        };
+          
+    };
+
+    Instruments.prototype.redraw = function () {
+
+        var circleprop = this.circleprop ;   
+
+        var insx = rs.marw;
+        var insy = rs.marh+circleprop*1.5;
+
+        this.scoreboard.drawall();
+        this.timeboard.drawall();
+
+
+        this.restart.drawplus(); 
+
+        context.font = "bold "+rs.x*2.8+"px Lucida Console";
+        context.fillStyle = colors.red;
+        context.fillText("Squared", rs.marw+circleprop*3.75, rs.marh*2);
+        context.fillText("Lines", rs.marw+circleprop*9.5, rs.marh*2);
+
+        
+        context.fillStyle = colors.bck;
+        context.fillText("js13k", rs.marw+circleprop*7, rs.marh*2);
+
+        context.fillStyle = colors.binary[0][0];
+        context.textAlign = "right";
+        context.fillText("Reversed v0.5", rs.fx, rs.marh*2);
+
+
+        context.textAlign = "left";
+        context.font = "bold "+rs.x*3+"px Lucida Console";
+        context.fillStyle = colors.binary[1][0];
+        context.fillText("score", insx+circleprop*6.1, insy+circleprop*1.75);
+        context.fillStyle = colors.binary[2][0];
+        context.fillText("time", insx+circleprop*13.1, insy+circleprop*1.75);
+        context.fillText("time", insx+circleprop*13.1, insy+circleprop*1.75);
+
+        
+        context.font = "bold "+rs.x*2.8+"px Lucida Console";
+        context.fillStyle = "#0000e0";
+        context.textAlign = "center";
+        context.fillText("heartland", rs.fx+rs.marw-circleprop*2.125, rs.fy+rs.marh+rs.x-circleprop*0.4);
+
+    };
+
+    Instruments.prototype.leveldraw = function () {
+               
+                context.clearRect(rs.fx/2-rs.fx/4, rs.fy-rs.x*3, rs.fx/2, rs.x*6);
+                                  
+                context.font = "bold "+rs.x*2.8+"px Lucida Console";
+                context.fillStyle = this.scoreboard.meters[0].data.color[0];
+                context.textAlign = "center";
+                context.fillText(this.level+' / 127', rs.fx/2, rs.fy+rs.marh+rs.x-this.circleprop*0.4);
+
+    };
+
+    Instruments.prototype.timereset = function () {this.timeboard.reset();};
+    
+    Instruments.prototype.scorereset = function () {this.scoreboard.reset();};
+    
+    Instruments.prototype.r1 = function () {
+            if (this.timeboard.r1()) {return true;}
+    };
+    
+    Instruments.prototype.a1 = function () {
+        this.score = this.score+1;
+        this.scoreboard.a1();
+    };
+
+    Instruments.prototype.levelup = function () {
+        this.level = this.level+1;
+        this.timereset();
+        this.leveldraw();
+        this.scoreboard.drawall();
+    };
+
+    return Instruments;
+}();
 //board && pieces - main game assets - mian interact functions
     
     var Gameassets = function () {
