@@ -557,7 +557,7 @@ var Instruments = function () {
                 
         };
           
-    };
+    }
 
     Instruments.prototype.redraw = function () {
 
@@ -604,12 +604,12 @@ var Instruments = function () {
 
     Instruments.prototype.leveldraw = function () {
                
-                context.clearRect(rs.fx/2-rs.fx/4, rs.fy-rs.x*3, rs.fx/2, rs.x*6);
-                                  
-                context.font = "bold "+rs.x*2.8+"px Lucida Console";
-                context.fillStyle = this.scoreboard.meters[0].data.color[0];
-                context.textAlign = "center";
-                context.fillText(this.level+' / 127', rs.fx/2, rs.fy+rs.marh+rs.x-this.circleprop*0.4);
+        context.clearRect(rs.fx/2-rs.fx/4, rs.fy-rs.x*3, rs.fx/2, rs.x*6);
+                          
+        context.font = "bold "+rs.x*2.8+"px Lucida Console";
+        context.fillStyle = this.scoreboard.meters[0].data.color[0];
+        context.textAlign = "center";
+        context.fillText(this.level+' / 127', rs.fx/2, rs.fy+rs.marh+rs.x-this.circleprop*0.4);
 
     };
 
@@ -618,7 +618,7 @@ var Instruments = function () {
     Instruments.prototype.scorereset = function () {this.scoreboard.reset();};
     
     Instruments.prototype.r1 = function () {
-            if (this.timeboard.r1()) {return true;}
+        if (this.timeboard.r1()) {return true;}
     };
     
     Instruments.prototype.a1 = function () {
@@ -634,14 +634,17 @@ var Instruments = function () {
     };
 
     return Instruments;
+
 }();
-//board && pieces - main game assets - mian interact functions
+
+//board && pieces - main game assets - main interact functions
     
     var Gameassets = function () {
         
         var Piece = function () {
             
             function Piece(ar, vl) {
+
                 this.fresh = true;
         
                 var cu = Math.floor(ar[0]/6);
@@ -649,103 +652,114 @@ var Instruments = function () {
                
                 var cl = 5;
                 var cr = 0;
+                var v = 0;
                  
-                for (var v = 0; v<ar.length; v++) {
-                        if (ar[v]%6 < cl) {cl = ar[v]%6;};
-                        if (ar[v]%6 > cr) {cr = ar[v]%6;};
-                    };
+                for (v = 0; v<ar.length; v++) {
+                        if (ar[v]%6 < cl) {cl = ar[v]%6;}
+                        if (ar[v]%6 > cr) {cr = ar[v]%6;}
+                    }
                 
                 this.hi = cd-cu;
                 this.wi = cr-cl;
 
                 
-                for (var v = 0; v<ar.length; v++) {
+                for (v = 0; v<ar.length; v++) {
                     ar[v] = ar[v]-cu*6;//-Math.floor(ar[v]/6);
                     ar[v] = ar[v]-Math.floor(ar[v]/6)*(5-this.wi);
                     ar[v] = ar[v] - cl;
-                    };
-                
-        
-                
+                } 
+              
                 var piecelen = (this.hi+1)*(this.wi+1);
         
                 this.values = [];
-                for (var v = 0; v<piecelen; v++) {
-                    if ((ar.length>0) && (ar[0]==v)) {this.values.push(vl.shift());
-                                                      ar.shift();
-                                                     } else {this.values.push([0, 0]);};
-                    };
+
+                for (v = 0; v<piecelen; v++) {
+
+                    if ((ar.length>0) && (ar[0]==v)) {
+                        this.values.push(vl.shift());
+                        ar.shift();
+                    } else {
+                        this.values.push([0, 0]);
+                    }
+                }
                  
-                //array example: [13, 15, 16, 10] //values - [[1,2],[2,2],[1,2]]
-                };
+            }
             
             
             Piece.prototype.ready = function (x, y, psize, pmargin) {
-                    var frx = (psize*(3-this.wi)/2)+x;
-                    var fry = (psize*(3-this.hi)/2)+y;
-                    this.squares = [];
+                var frx = (psize*(3-this.wi)/2)+x;
+                var fry = (psize*(3-this.hi)/2)+y;
+                this.squares = [];
+            
+                for (var h = 0; h <= this.hi; h++) {
+                         for (var w = 0; w <= this.wi; w++) {
+                             if (this.values[w+h*(1+this.wi)][0]>0) {
+                                 this.squares.push(new Square(frx+w*psize, fry+h*psize, psize, pmargin, this.values[w+h*(1+this.wi)][0], this.values[w+h*(1+this.wi)][1], 2));
+                                }
+                         }
+                    }
                 
-                    for (var h = 0; h <= this.hi; h++) {
-                             for (var w = 0; w <= this.wi; w++) {
-                                 if (this.values[w+h*(1+this.wi)][0]>0) {
-                                     this.squares.push(new Square(frx+w*psize, fry+h*psize, psize, pmargin, this.values[w+h*(1+this.wi)][0], this.values[w+h*(1+this.wi)][1], 2));
-                                    }
-                             }
-                        }
-                    for (var s = 0; s < this.squares.length; s++) {
-                        this.squares[s].data.innermargin = rs.x/2;
-                        this.squares[s].data.stroke = rs.x/2;
-                        this.squares[s].data.blister  = 1;
-                        }
-                };
+                for (var s = 0; s < this.squares.length; s++) {
+                    this.squares[s].data.innermargin = rs.x/2;
+                    this.squares[s].data.stroke = rs.x/2;
+                    this.squares[s].data.blister  = 1;
+                }
+
+            };
             
             Piece.prototype.draw = function () {
-                    for (var s = 0; s < this.squares.length; s++) {
-                        this.squares[s].draw();
-                    };
-                };
+                for (var s = 0; s < this.squares.length; s++) {
+                    this.squares[s].draw();
+                }
+            };
+
             Piece.prototype.selecto = function () {
-                    for (var s = 0; s < this.squares.length; s++) {
-                        this.squares[s].selecto();
-                    };
-                };
+                for (var s = 0; s < this.squares.length; s++) {
+                    this.squares[s].selecto();
+                }
+            };
+
             Piece.prototype.deselect = function () {
-                   for (var s = 0; s < this.squares.length; s++) {
-                        this.squares[s].deselect();
-                    };
-                };
+               for (var s = 0; s < this.squares.length; s++) {
+                    this.squares[s].deselect();
+                }
+            };
             
              Piece.prototype.nextl = function () {
-                    for (var s = 0; s < this.squares.length; s++) {
-                        this.squares[s].clear();
-                        console.log('u');
-                    };
-                };
+                for (var s = 0; s < this.squares.length; s++) {
+                    this.squares[s].clear();
+                    console.log('u');
+                }
+            };
             
             Piece.prototype.clear = function () {
-                    this.fresh = false;
-                    for (var s = 0; s < this.squares.length; s++) {
-                        this.squares[s].data.blister = 0;
-                        this.squares[s].break();
-                    };
-                };
+                this.fresh = false;
+                for (var s = 0; s < this.squares.length; s++) {
+                    this.squares[s].data.blister = 0;
+                    this.squares[s].break();
+                }
+            };
             
             Piece.prototype.checkout = function (ap) {
-                
-                    var compval = function (a, b) { for(var i = a.length; i--;) {
-                                                            if ((a[i][0] !== b[i][0]) || (a[i][1] !== b[i][1]))
-                                                                return false;
-                                                        }
-                                                        return true;
-                                                  };
-                                                   
-                    if ((this.fresh) && (this.hi == ap.hi) && (this.wi == ap.wi) && 
-                        (this.values.length == ap.values.length) && (compval(this.values, ap.values))) {return true;} else {return false;}
-                  
-                            
+            
+                var compval = function (a, b) { 
+                    for(var i = a.length; i--;) {
+                        if ((a[i][0] !== b[i][0]) || (a[i][1] !== b[i][1])) {return false;}
+                    }
+                    return true;
                 };
+                                               
+                if ((this.fresh) && (this.hi == ap.hi) && (this.wi == ap.wi) && 
+                    (this.values.length == ap.values.length) && (compval(this.values, ap.values))) {
+                    return true;
+                } else {
+                    return false;
+                }
+                        
+            };
 
             return Piece;
+            
         }();
         
         
