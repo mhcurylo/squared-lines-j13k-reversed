@@ -777,7 +777,13 @@ var Gameassets = function () {
 
                 var values = [];
                 
-                for (var value = 0; value < 36; value++) {if (Math.random()>noise) {values.push([1,0]);} else {values.push([2,0]);};};
+                for (var value = 0; value < 36; value++) {
+                    if (Math.random()>noise) {
+                        values.push([1,0]);
+                    } else {
+                        values.push([2,0]);
+                    }
+                }
                 
                 return values;
             
@@ -934,8 +940,8 @@ var Gameassets = function () {
 
             var pa = tryconstruct(this.pc);
             
-            function f1 (a) {return Math.floor(a / 6);};
-            function f2 (a) {return a % 6;};
+            function f1 (a) {return Math.floor(a / 6);}
+            function f2 (a) {return a % 6;}
 
             while (pa[0].length >= 5) {
                 
@@ -999,7 +1005,7 @@ var Gameassets = function () {
         //very important function - produces piece out of array val and an array of elements (fex selected)
         Board.prototype.a2p = function () {
 
-        this.selected.sort(function(a,b){return a - b});
+        this.selected.sort(function(a,b){return a - b;});
 
         var arrv = [];
         var arrx = [];
