@@ -1319,7 +1319,7 @@ var intro = function () {
         context.textAlign = "left";
         context.fillText('functionary.', rs.fx/8, rs.fy/3+rs.x*2);
         context.fillText('your function is to cut', rs.fx/8, rs.fy/3+rs.x*6);
-        context.fillText('(board) into procedulary declared', rs.fx/8, rs.fy/3+rs.x*10);
+        context.fillText('(board) into procedurally declared', rs.fx/8, rs.fy/3+rs.x*10);
         context.fillText('└► blocks', rs.fx/8, rs.fy/3+rs.x*14);
         context.fillText('   for the player', rs.fx/8, rs.fy/3+rs.x*18);
         context.fillText('   to enjoy', rs.fx/8, rs.fy/3+rs.x*22);
